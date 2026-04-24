@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>无障碍树 vs DOM 树 演示</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: #f5f5f5; color: #333; }
+
+    /* 装饰性容器 —— 这些在无障碍树中会被忽略 */
+    .page-wrapper { max-width: 800px; margin: 0 auto; padding: 20px; }
+    .card { background: white; border-radius: 12px; padding: 24px; margin: 16px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .flex-row { display: flex; gap: 12px; align-items: center; }
+    .spacer { height: 16px; }
+    .divider { border-top: 1px solid #eee; margin: 16px 0; }
+    .icon { width: 20px; height: 20px; background: #4285f4; border-radius: 50%; display: inline-block; }
+    .badge { background: #e8f5e9; color: #2e7d32; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+
+    header { background: #1a73e8; color: white; padding: 16px 24px; }
+    nav a { color: white; text-decoration: none; margin-right: 16px; }
+    nav a:hover { text-decoration: underline; }
+    h1 { font-size: 24px; }
+    h2 { font-size: 18px; margin-bottom: 8px; }
+    button { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+    .btn-primary { background: #1a73e8; color: white; }
+    .btn-secondary { background: #e0e0e0; color: #333; }
+    input, textarea, select { padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; width: 100%; }
+    label { font-size: 14px; font-weight: 500; display: block; margin-bottom: 4px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #eee; }
+    th { background: #f9f9f9; font-weight: 600; }
+    footer { text-align: center; padding: 24px; color: #999; font-size: 12px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== 语义化区域 ==================== -->
+
+  <!-- <header> 语义: banner landmark -->
+  <header>
+    <div class="flex-row">
+      <h1>无障碍树演示页面</h1>
+      <!-- <nav> 语义: navigation landmark -->
+      <nav aria-label="主导航">
+        <a href="#form-section">表单</a>
+        <a href="#table-section">表格</a>
+        <a href="#interactive-section">交互</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 大量装饰性 div 嵌套 —— 无障碍树会跳过这些 -->
+  <div class="page-wrapper">
+    <div class="card">
+      <div class="flex-row">
+        <div>
+          <div>
+            <div>
+
+  <!-- ========== 1. 表单区域（语义化） ========== -->
+  <section id="form-section" aria-label="用户注册表单">
+    <h2>用户注册</h2>
+    <div class="spacer"></div>
+
+    <form>
+      <div style="margin-bottom: 12px;">
+        <label for="username">用户名</label>
+        <input type="text" id="username" placeholder="请输入用户名" required>
+      </div>
+
+      <div style="margin-bottom: 12px;">
+        <label for="email">邮箱地址</label>
+        <input type="email" id="email" placeholder="you@example.com">
+      </div>
+
+      <div style="margin-bottom: 12px;">
+        <label for="password">密码</label>
+        <input type="password" id="password" placeholder="至少8位">
+      </div>
+
+      <div style="margin-bottom: 12px;">
+        <label for="role">角色选择</label>
+        <select id="role">
+          <option value="dev">开发者</option>
+          <option value="designer">设计师</option>
+          <option value="pm">产品经理</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom: 12px;">
+        <label for="bio">个人简介</label>
+        <textarea id="bio" rows="3" placeholder="介绍一下你自己..."></textarea>
+      </div>
+
+      <div style="margin-bottom: 12px;">
+        <input type="checkbox" id="agree">
+        <label for="agree" style="display: inline;">我同意服务条款</label>
+      </div>
+
+      <div class="flex-row">
+        <button type="submit" class="btn-primary">注册</button>
+        <button type="reset" class="btn-secondary">重置</button>
+      </div>
+    </form>
+  </section>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 2. 非语义化区域（用 div+span 模拟） ========== -->
+    <div class="card">
+      <h2>非语义化的"按钮"和"链接"</h2>
+      <p style="color: #999; font-size: 13px; margin-bottom: 12px;">
+        以下元素看起来像按钮和链接，但使用的是 div/span，无障碍树中它们不会被识别为可交互元素。
+      </p>
+
+      <div class="flex-row" style="margin-bottom: 12px;">
+        <!-- 这些 div "按钮" 在无障碍树中不会显示为 button -->
+        <div class="btn-primary" style="display:inline-block;" onclick="alert('div clicked')">
+          我是 div 假按钮
+        </div>
+        <span class="btn-secondary" style="display:inline-block; padding:8px 16px; cursor:pointer;" onclick="alert('span clicked')">
+          我是 span 假按钮
+        </span>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- 对比：加了 ARIA 属性的非语义元素 —— 会出现在无障碍树中 -->
+      <div class="flex-row">
+        <div role="button" tabindex="0" class="btn-primary" style="display:inline-block;" onclick="alert('aria div clicked')">
+          div + role=button
+        </div>
+        <span role="link" tabindex="0" style="color:#1a73e8; cursor:pointer; text-decoration:underline;">
+          span + role=link
+        </span>
+      </div>
+    </div>
+
+    <!-- ========== 3. 表格区域（语义化） ========== -->
+    <div class="card" id="table-section">
+      <h2>数据表格</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>姓名</th>
+            <th>角色</th>
+            <th>状态</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>张三</td>
+            <td>开发者</td>
+            <td><span class="badge">活跃</span></td>
+          </tr>
+          <tr>
+            <td>李四</td>
+            <td>设计师</td>
+            <td><span class="badge">活跃</span></td>
+          </tr>
+          <tr>
+            <td>王五</td>
+            <td>产品经理</td>
+            <td><span class="badge" style="background:#fff3e0;color:#e65100;">离线</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ========== 4. 交互元素区域 ========== -->
+    <div class="card" id="interactive-section">
+      <h2>交互元素对比</h2>
+
+      <div style="margin-bottom: 16px;">
+        <h3 style="font-size:14px; margin-bottom:8px;">语义化的真按钮</h3>
+        <div class="flex-row">
+          <button class="btn-primary" onclick="alert('真按钮1')">保存</button>
+          <button class="btn-secondary" onclick="alert('真按钮2')">取消</button>
+          <button class="btn-secondary" disabled>已禁用</button>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div style="margin-bottom: 16px;">
+        <h3 style="font-size:14px; margin-bottom:8px;">语义化的真链接</h3>
+        <a href="https://developer.chrome.com/docs/devtools" target="_blank">Chrome DevTools 文档</a>
+        &nbsp;|&nbsp;
+        <a href="https://www.w3.org/WAI/ARIA/" target="_blank">WAI-ARIA 规范</a>
+      </div>
+
+      <div class="divider"></div>
+
+      <div>
+        <h3 style="font-size:14px; margin-bottom:8px;">纯装饰性元素（无障碍树中不可见）</h3>
+        <div class="flex-row">
+          <div class="icon"></div>
+          <div class="icon" style="background:#ea4335;"></div>
+          <div class="icon" style="background:#fbbc04;"></div>
+          <div class="icon" style="background:#34a853;"></div>
+          <span style="color:#999;">← 这些圆点是纯装饰 div，无障碍树会忽略它们</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- 带 aria-hidden 的元素 —— 强制从无障碍树中隐藏 -->
+      <div>
+        <h3 style="font-size:14px; margin-bottom:8px;">aria-hidden 元素</h3>
+        <p>下面这个按钮带有 aria-hidden="true"，在无障碍树中看不到：</p>
+        <button aria-hidden="true" class="btn-secondary" style="margin-top:8px;">我在 DOM 中但不在无障碍树中</button>
+      </div>
+    </div>
+
+    <!-- ========== 5. 对屏幕阅读器可见但视觉隐藏 ========== -->
+    <div class="card">
+      <h2>屏幕阅读器专属内容</h2>
+      <p>下方有一段只对屏幕阅读器可见的文字（视觉上完全隐藏）：</p>
+      <span class="sr-only">这段文字视觉上看不到，但在无障碍树中存在，屏幕阅读器会朗读它。</span>
+      <p style="color:#999; font-size:13px;">↑ 你在页面上看不到它，但在无障碍树的快照中能找到。</p>
+    </div>
+
+  </div>
+
+  <!-- <footer> 语义: contentinfo landmark -->
+  <footer>
+    <p>Accessibility Tree Demo &copy; 2026 | 用于测试 Chrome DevTools MCP</p>
+  </footer>
+
+</body>
+</html>
